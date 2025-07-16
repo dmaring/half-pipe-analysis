@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+
+# Ignore sample videos
+sample_videos/
+
+# Python virtual environment
+.venv/

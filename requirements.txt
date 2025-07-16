@@ -1,0 +1,7 @@
+google-cloud-vision
+google-generativeai
+opencv-python
+python-dotenv
+google-cloud-videointelligence
+google-cloud-storage
+Pillow
