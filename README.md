@@ -12,12 +12,12 @@ This project analyzes skateboarding videos from a half-pipe competition using Go
   </tr>
   <tr>
     <td>
-      <a href="example_files/shaun_white.mp4" target="_blank">
+      <a href="https://storage.googleapis.com/vert-analysis-examples/shaun_white.mp4" target="_blank">
         <img src="example_files/shaun_white_thumbnail.jpg" width="200px" />
       </a>
     </td>
     <td>
-      <a href="example_files/shaun_white_commentary.mp4" target="_blank">
+      <a href="https://storage.googleapis.com/vert-analysis-examples/shaun_white_commentary.mp4" target="_blank">
         <img src="example_files/shaun_white_commentary_thumbnail.jpg" width="200px" />
       </a>
     </td>
