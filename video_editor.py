@@ -1,0 +1,93 @@
+import json
+import os
+import ffmpeg
+from tts_utils import generate_commentary_audio
+from video_analysis import Trick
+
+def create_commentary_video(source_video_path, analysis_json, output_video_path, temp_dir, keep_temp_files=False):
+    """
+    Creates a new video with commentary overlaid on the original video.
+    """
+    try:
+        tricks_data = json.loads(analysis_json)
+        tricks = [Trick(**trick) for trick in tricks_data]
+        print(f"Tricks JSON: \n{tricks}")
+    except (json.JSONDecodeError, TypeError) as e:
+        print(f"Error parsing analysis JSON: {e}")
+        return
+
+    if not tricks:
+        print("No tricks found in the analysis text.")
+        return
+
+    temp_audio_files = []
+    video_streams = []
+    audio_streams = []
+    last_end_time = 0
+
+    # Get the original video's audio stream
+    original_audio = ffmpeg.input(source_video_path)['a']
+
+    for i, trick in enumerate(tricks):
+        # Generate commentary audio for the trick
+        audio_filename = os.path.join(temp_dir, f"temp_audio_{i}.wav")
+        if not os.path.exists(audio_filename):
+            generate_commentary_audio(trick.commentary, audio_filename)
+        temp_audio_files.append(audio_filename)
+        commentary_audio = ffmpeg.input(audio_filename)['a']
+
+        # Get the end time of the trick
+        time_parts = list(map(int, trick.time_stamp_end.split(':')))
+        if len(time_parts) == 3:
+            h, m, s = time_parts
+            trick_end_time = h * 3600 + m * 60 + s
+        elif len(time_parts) == 2:
+            m, s = time_parts
+            trick_end_time = m * 60 + s
+        else:
+            raise ValueError(f"Invalid timestamp format: {trick.time_stamp_end}")
+
+        # Get the duration of the commentary audio
+        audio_probe = ffmpeg.probe(audio_filename)
+        audio_duration = float(audio_probe['format']['duration'])
+
+        # Add the video segment for the trick
+        video_streams.append(
+            ffmpeg.input(source_video_path).trim(start=last_end_time, end=trick_end_time).setpts('PTS-STARTPTS')
+        )
+        
+        # Add a "paused" frame at the end of the trick
+        temp_frame_path = os.path.join(temp_dir, f"temp_frame_{i}.jpg")
+        ffmpeg.input(source_video_path, ss=trick_end_time).output(temp_frame_path, vframes=1).run(overwrite_output=True)
+        
+        paused_clip = ffmpeg.input(temp_frame_path, loop=1, t=audio_duration)
+        video_streams.append(paused_clip['v'])
+        
+        # Add the original audio segment for the trick
+        audio_streams.append(
+            original_audio.filter('atrim', start=last_end_time, end=trick_end_time).filter('asetpts', 'PTS-STARTPTS')
+        )
+        
+        # Add the commentary audio
+        audio_streams.append(commentary_audio)
+        
+        if not keep_temp_files:
+            os.remove(temp_frame_path)
+
+        last_end_time = trick_end_time
+
+    # Add the remainder of the video and audio
+    video_streams.append(ffmpeg.input(source_video_path).trim(start=last_end_time).setpts('PTS-STARTPTS'))
+    audio_streams.append(original_audio.filter('atrim', start=last_end_time).filter('asetpts', 'PTS-STARTPTS'))
+
+    # Concatenate all video and audio streams
+    final_video = ffmpeg.concat(*video_streams, v=1, a=0)
+    final_audio = ffmpeg.concat(*audio_streams, v=0, a=1)
+
+    # Combine the final video and audio
+    ffmpeg.output(final_video, final_audio, output_video_path).run(overwrite_output=True)
+
+    # Clean up temporary audio files
+    if not keep_temp_files:
+        for audio_file in temp_audio_files:
+            os.remove(audio_file)

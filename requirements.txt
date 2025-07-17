@@ -1,7 +1,6 @@
-google-cloud-vision
-google-generativeai
-opencv-python
-python-dotenv
-google-cloud-videointelligence
+google-generativeai>=0.5.4
 google-cloud-storage
+python-dotenv
 Pillow
+ffmpeg-python
+gtts

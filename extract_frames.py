@@ -5,7 +5,7 @@ import tempfile
 import shutil
 from google.cloud import storage
 from dotenv import load_dotenv
-import google.generativeai as genai
+import google.genai as genai
 from PIL import Image
 
 load_dotenv()
@@ -15,7 +15,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
 
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)  # pylint: disable=no-member
+    genai.configure(api_key=GEMINI_API_KEY)
 
 def download_from_gcs(gcs_uri, local_path):
     """Downloads a file from GCS."""
@@ -47,11 +47,17 @@ def analyze_frame_with_gemini(image_path):
 
     print(f"Analyzing frame: {os.path.basename(image_path)}")
     try:
-        model = genai.GenerativeModel(GEMINI_MODEL)  # pylint: disable=no-member
+        client = genai.Client(api_key=GEMINI_API_KEY)
         image = Image.open(image_path)
         prompt = "What skateboarding trick is this person doing in this image?"
-        response = model.generate_content([prompt, image])
-        print(f"  Gemini says: {response.text.strip()}")
+        response = client.models.generate_content(
+            model=f"models/{GEMINI_MODEL}",
+            contents=[prompt, image]
+        )
+        if response.text:
+            print(f"  Gemini says: {response.text.strip()}")
+        else:
+            print("  Gemini did not provide a text response.")
     except Exception as e:
         print(f"  Error analyzing frame: {e}")
 
