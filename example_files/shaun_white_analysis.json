@@ -1,0 +1,82 @@
+[
+  {
+    "trick_name": "Backside Air Lien Grab",
+    "time_stamp_start": "00:16",
+    "time_stamp_end": "00:19",
+    "description": "The skater performs a high backside air, grabbing the heel edge of the board with his front hand while twisting his body slightly.",
+    "trick_score": 90.50,
+    "previous_tricks": "",
+    "final_run_score": 0.00,
+    "commentary": "And Shaun White starts his run with a massive backside air! Look at the amplitude he's getting, way above the coping. A super stylish lien grab to kick things off. That's a strong statement. The execution was flawless, great height, and a clean landing. We're scoring that a 90.50."
+  },
+  {
+    "trick_name": "Frontside Fakie Air",
+    "time_stamp_start": "00:20",
+    "time_stamp_end": "00:23",
+    "description": "Traveling backwards (fakie), the skater performs a frontside air, grabbing the board and landing traveling forward. He maintains significant height.",
+    "trick_score": 91.00,
+    "previous_tricks": "Backside Air Lien Grab",
+    "final_run_score": 0.00,
+    "commentary": "He carries that speed into the other wall and launches into a huge frontside air from fakie. The control to go that high while traveling backward is just incredible. Another master-level trick with perfect form. That's a 91.00 from the judges."
+  },
+  {
+    "trick_name": "Fakie to Fakie 540 (Caballerial)",
+    "time_stamp_start": "00:25",
+    "time_stamp_end": "00:28",
+    "description": "The skater performs a full 540-degree rotation while traveling backwards (fakie) and lands backwards, all without using his hands.",
+    "trick_score": 88.00,
+    "previous_tricks": "Backside Air Lien Grab, Frontside Fakie Air",
+    "final_run_score": 0.00,
+    "commentary": "Here comes the classic Caballerial, a fakie 540! He makes it look so easy, spinning smoothly and landing perfectly fakie to set up for his next wall. Great use of the ramp and maintaining flow. We're calling that an 88.00."
+  },
+  {
+    "trick_name": "Heelflip Frontside Cab",
+    "time_stamp_start": "00:31",
+    "time_stamp_end": "00:33",
+    "description": "While traveling fakie, the skater combines a heelflip with a frontside 180-degree rotation, landing traveling forward.",
+    "trick_score": 89.20,
+    "previous_tricks": "Backside Air Lien Grab, Frontside Fakie Air, Fakie to Fakie 540",
+    "final_run_score": 0.00,
+    "commentary": "Oh, and he mixes in the technical skill! A heelflip frontside cab! Incorporating a flip trick into a vert run with this much speed and amplitude is expert-level stuff. Landed clean, a solid score of 89.20 for that one."
+  },
+  {
+    "trick_name": "Backside 360 Air",
+    "time_stamp_start": "00:33",
+    "time_stamp_end": "00:36",
+    "description": "The skater performs a full 360-degree backside rotation in the air while grabbing the board, landing cleanly.",
+    "trick_score": 86.75,
+    "previous_tricks": "Backside Air Lien Grab, Frontside Fakie Air, Fakie to Fakie 540, Heelflip Frontside Cab",
+    "final_run_score": 0.00,
+    "commentary": "Now a backside 360, keeping the flow going. A bit of a setup trick for him, but still executed with his signature height and style. It's a textbook 360, earning him an 86.75."
+  },
+  {
+    "trick_name": "Backside 720",
+    "time_stamp_start": "00:36",
+    "time_stamp_end": "00:39",
+    "description": "The skater completes two full backside rotations (720 degrees) in the air, grabbing the board with an indy grab before landing.",
+    "trick_score": 92.50,
+    "previous_tricks": "Backside Air Lien Grab, Frontside Fakie Air, Fakie to Fakie 540, Heelflip Frontside Cab, Backside 360 Air",
+    "final_run_score": 0.00,
+    "commentary": "And there it is, the Backside 720! Two full rotations, stomped perfectly! The crowd loves it! That's a monster trick that requires immense control and air awareness. That's going to score big, a 92.50!"
+  },
+  {
+    "trick_name": "Frontside 540 Mute Grab",
+    "time_stamp_start": "00:39",
+    "time_stamp_end": "00:41",
+    "description": "The skater performs a 540-degree frontside rotation while grabbing the toe-side edge of the board with his front hand.",
+    "trick_score": 91.50,
+    "previous_tricks": "Backside Air Lien Grab, Frontside Fakie Air, Fakie to Fakie 540, Heelflip Frontside Cab, Backside 360 Air, Backside 720",
+    "final_run_score": 0.00,
+    "commentary": "He's not done yet! A huge frontside 540 with a mute grab! Back-to-back big spins! The consistency and stamina are just off the charts. Another high-scoring, master-level trick. That's a 91.50."
+  },
+  {
+    "trick_name": "Heelflip Body Varial Frontside 540",
+    "time_stamp_start": "00:41",
+    "time_stamp_end": "00:46",
+    "description": "As a final trick, the skater initiates a heelflip, followed by a 180-degree body varial, then grabs the board and completes a frontside 540-degree spin, landing just as the time expires.",
+    "trick_score": 95.00,
+    "previous_tricks": "Backside Air Lien Grab, Frontside Fakie Air, Fakie to Fakie 540, Heelflip Frontside Cab, Backside 360 Air, Backside 720, Frontside 540 Mute Grab",
+    "final_run_score": 93.00,
+    "commentary": "Unbelievable! With time running out, he pulls out the Heelflip Body Varial Frontside 540! That is one of the most technical and difficult tricks in all of vert skating! A heelflip, a body varial, and a 540 all in one! He lands it perfectly! That is the winning run, no question! The judges reward that incredible closer with a 95.00! Based on the average of his top three tricks, the Backside 720, the Frontside 540, and that insane final combo, Shaun White gets a final run score of 93.00! That's the gold!"
+  }
+]

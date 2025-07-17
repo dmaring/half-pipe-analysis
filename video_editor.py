@@ -4,7 +4,7 @@ import ffmpeg
 from tts_utils import generate_commentary_audio
 from video_analysis import Trick
 
-def create_commentary_video(source_video_path, analysis_json, output_video_path, temp_dir, keep_temp_files=False):
+def create_commentary_video(source_video_path, analysis_json, output_video_path, temp_dir):
     """
     Creates a new video with commentary overlaid on the original video.
     """
@@ -71,14 +71,37 @@ def create_commentary_video(source_video_path, analysis_json, output_video_path,
         # Add the commentary audio
         audio_streams.append(commentary_audio)
         
-        if not keep_temp_files:
-            os.remove(temp_frame_path)
 
         last_end_time = trick_end_time
 
     # Add the remainder of the video and audio
-    video_streams.append(ffmpeg.input(source_video_path).trim(start=last_end_time).setpts('PTS-STARTPTS'))
-    audio_streams.append(original_audio.filter('atrim', start=last_end_time).filter('asetpts', 'PTS-STARTPTS'))
+    # Get the final score from the last trick
+    final_score = tricks[-1].final_run_score
+    score_text = f"Final Score: {final_score}"
+
+    # Add the remainder of the video with the score overlay
+    remainder_video = (
+        ffmpeg.input(source_video_path)
+        .trim(start=last_end_time)
+        .setpts("PTS-STARTPTS")
+        .drawtext(
+            text=score_text,
+            x="w-tw-10",
+            y="h-th-10",
+            fontsize=48,
+            fontcolor="white",
+            box=1,
+            boxcolor="black@0.5",
+            boxborderw=5,
+            enable="between(t,1,6)",  # Show for 5 seconds, 1 second after the last trick
+        )
+    )
+    video_streams.append(remainder_video)
+    audio_streams.append(
+        original_audio.filter("atrim", start=last_end_time).filter(
+            "asetpts", "PTS-STARTPTS"
+        )
+    )
 
     # Concatenate all video and audio streams
     final_video = ffmpeg.concat(*video_streams, v=1, a=0)
@@ -88,6 +111,42 @@ def create_commentary_video(source_video_path, analysis_json, output_video_path,
     ffmpeg.output(final_video, final_audio, output_video_path).run(overwrite_output=True)
 
     # Clean up temporary audio files
-    if not keep_temp_files:
-        for audio_file in temp_audio_files:
-            os.remove(audio_file)
+
+
+def add_score_overlay(source_video_path, analysis_json, output_video_path):
+    """
+    Adds a final score overlay to the video without commentary.
+    """
+    try:
+        tricks_data = json.loads(analysis_json)
+        tricks = [Trick(**trick) for trick in tricks_data]
+    except (json.JSONDecodeError, TypeError) as e:
+        print(f"Error parsing analysis JSON: {e}")
+        return
+
+    if not tricks:
+        print("No tricks found in the analysis text.")
+        return
+
+    # Get video duration
+    probe = ffmpeg.probe(source_video_path)
+    duration = float(probe["format"]["duration"])
+    overlay_start_time = duration - 5
+
+    final_score = tricks[-1].final_run_score
+    score_text = f"Final Score: {final_score}"
+
+    video_input = ffmpeg.input(source_video_path)
+    video_with_overlay = video_input.video.drawtext(
+        text=score_text,
+        x="w-tw-10",
+        y="h-th-10",
+        fontsize=48,
+        fontcolor="white",
+        box=1,
+        boxcolor="black@0.5",
+        boxborderw=5,
+        enable=f"gte(t,{overlay_start_time})",
+    )
+
+    ffmpeg.output(video_with_overlay, video_input.audio, output_video_path).run(overwrite_output=True)

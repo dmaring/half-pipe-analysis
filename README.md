@@ -122,3 +122,9 @@ Audio saved to temp_audio_1.wav
 
 Commentary video saved to: test-video_commentary.mp4
 ```
+
+# Next Improvements
+1) Improve Trick Recognition utilizing Gemini 2.5 Pro
+2) Fine Tune Gemini 2.5 Pro on Trick Recognition and Scoring
+3) Export Run Results to BigQuery
+4) Create Web Front End for Demos

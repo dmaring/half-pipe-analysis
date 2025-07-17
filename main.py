@@ -1,9 +1,8 @@
 import argparse
 import os
-import tempfile
 from gcs_utils import upload_to_gcs, download_from_gcs
 from video_analysis import analyze_video
-from video_editor import create_commentary_video
+from video_editor import create_commentary_video, add_score_overlay
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,7 +14,7 @@ def main():
     Main function to orchestrate the video analysis.
     """
     parser = argparse.ArgumentParser(
-        description="Analyze skateboarding videos with Gemini 1.5 Pro."
+        description="Analyze skateboarding videos with Gemini 2.5 Pro."
     )
     parser.add_argument("--local-file", help="Path to a local video file to analyze.")
     parser.add_argument(
@@ -28,25 +27,40 @@ def main():
         help="Generate a new video with commentary.",
     )
     parser.add_argument(
-        "--keep-temp-files",
+        "--score-overlay-only",
         action="store_true",
-        help="Keep temporary files for debugging.",
+        help="Generate a new video with only the final score overlay.",
+    )
+    parser.add_argument(
+        "--analyze-only",
+        action="store_true",
+        help="Only generate the analysis JSON file.",
+    )
+    parser.add_argument(
+        "--clean-temp",
+        action="store_true",
+        help="Remove all files from the temp directory.",
     )
 
     args = parser.parse_args()
 
     local_video_path = None
-    temp_dir = None
+    temp_dir = "temp"
+    os.makedirs(temp_dir, exist_ok=True)
 
     try:
+        if args.clean_temp:
+            print("Cleaning up temporary directory...")
+            for file in os.listdir(temp_dir):
+                os.remove(os.path.join(temp_dir, file))
+            print("Temporary directory cleaned.")
+            return
+
         if args.local_file:
             local_video_path = args.local_file
             video_name = os.path.splitext(os.path.basename(local_video_path))[0]
-            temp_dir = os.path.join(tempfile.gettempdir(), video_name)
         elif args.gcs_uri:
             video_name = os.path.splitext(os.path.basename(args.gcs_uri))[0]
-            temp_dir = "temp"
-            os.makedirs(temp_dir, exist_ok=True)
             local_video_path = os.path.join(temp_dir, os.path.basename(args.gcs_uri))
             if not os.path.exists(local_video_path):
                 print(f"Downloading {args.gcs_uri} to {local_video_path}...")
@@ -73,10 +87,13 @@ def main():
         print(analysis_result)
         print("-----------------------")
 
+        if args.analyze_only:
+            return
+
         if args.with_commentary:
             print("\nGenerating video with commentary...")
-            output_video_path = f"{os.path.splitext(local_video_path)[0]}_commentary.mp4"
-            create_commentary_video(local_video_path, analysis_result, output_video_path, temp_dir, args.keep_temp_files)
+            output_video_path = os.path.join(temp_dir, f"{video_name}_commentary.mp4")
+            create_commentary_video(local_video_path, analysis_result, output_video_path, temp_dir)
             print(f"\nCommentary video saved to: {output_video_path}")
 
             try:
@@ -84,17 +101,22 @@ def main():
                 print(f"Uploaded commentary video to: {gcs_uri}")
             except ValueError as e:
                 print(f"Error uploading commentary video: {e}")
+        elif args.score_overlay_only:
+            print("\nAdding score overlay to video...")
+            output_video_path = os.path.join(temp_dir, f"{video_name}_score_overlay.mp4")
+            add_score_overlay(local_video_path, analysis_result, output_video_path)
+            print(f"\nVideo with score overlay saved to: {output_video_path}")
+
+            try:
+                gcs_uri = upload_to_gcs(output_video_path, "output")
+                print(f"Uploaded video with score overlay to: {gcs_uri}")
+            except ValueError as e:
+                print(f"Error uploading video with score overlay: {e}")
 
     except ValueError as e:
         print(f"Error: {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-    finally:
-        if temp_dir and not args.keep_temp_files:
-            print(f"Cleaning up temporary directory: {temp_dir}")
-            for file in os.listdir(temp_dir):
-                os.remove(os.path.join(temp_dir, file))
-            os.rmdir(temp_dir)
 
 
 if __name__ == "__main__":
